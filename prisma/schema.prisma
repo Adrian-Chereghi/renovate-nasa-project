@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://user:password@localhost:5432/mydb?schema=public"
+}
+
+
+model Launch {
+  id Int @id @default(autoincrement())
+  planet Planet? @relation(fields: [planetId], references: [kepler_name])
+  planetId String?
+  customers Customer[]
+
+  mission String @unique
+  rocket String
+  launchDate DateTime @default(now())
+  upcoming Boolean @default(true)
+  success Boolean @default(true)
+}
+
+model Customer {
+  id Int @id @default(autoincrement())
+  name String
+  launch Launch? @relation(fields: [launchId], references: [id])
+  launchId Int?
+}
+
+model Planet {
+  kepler_name String @id
+  launchs Launch[]
+
+  koi_disposition Disposition @default(CONFIRMED)
+  koi_insol String
+  koi_prad String
+}
+
+enum Disposition {
+  CONFIRMED
+  REJECTED @map("FALSE POSITIVE")
+}
